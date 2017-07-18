@@ -1,5 +1,6 @@
 from core.base import *
 from core.components import *
+from time import time as current_time
 import setting
 
 
@@ -47,4 +48,42 @@ class HighscoreText ( GameObject ) :
         self.textRender.setText ( "best " + str ( self.score ) )
         self.textRender.draw ( screen )
 
+
+class TimeText ( GameObject ) :
+    def __init__ ( self ,x_ratio=0.5 ,y_ratio=0.5 ,size=100 , color=(255,255,255)) :
+        self.textRender = TextRender ( size = size , color = color , center = True)
+        self.textRender.position.x = setting.size_screen[0]*x_ratio
+        self.textRender.position.y = setting.size_screen[1]*y_ratio
         
+        self.start_count()
+        
+    def draw ( self , screen ) :
+        self.textRender.draw ( screen )
+
+    def update( self ) :
+        if not self.__stop and not self.__pause :
+            time_delta = current_time() - self.__start_time
+        
+        self.textRender.setText( format(time_delta, '.2f') )
+
+    def pause_count ( self ) :
+        self.__pause = True
+
+    def continue_count ( self ) :
+        self.__pause = False
+        
+    def start_count ( self ) :
+        self.textRender.setText( format(0.0,'.2f') )
+        
+        self.__start_time = current_time()
+        self.__stop = False
+        self.__pause = False
+
+    def stop_count ( self ) :
+        self.__stop = True
+
+    def get_start_time ( self ) :
+        return self.__start_time
+
+    def get_time_since_start ( self ) :
+        return current_time() - self.get_start_time()
